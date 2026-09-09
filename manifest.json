@@ -1,6 +1,6 @@
 {
   "name": "Hindi-Nuvio",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "scrapers": [
     {
       "id": "4khdhub",
@@ -155,7 +155,7 @@
       "enabled": true,
       "formats": ["mp4", "m3u8"],
       "logo": "https://i.postimg.cc/L64M3bYV/netmirror.png",
-      "contentLanguage": ["en"]
+      "contentLanguage": ["en", "hi"]
     },
     {
       "id": "streamflix",
@@ -173,7 +173,7 @@
     {
       "id": "nuvio-vegamovies",
       "name": "VegaMovies",
-      "description": "VegaMovies streaming with high-quality direct links (~6s)",
+      "description": "VegaMovies streaming with high-quality direct links",
       "version": "1.0",
       "author": "raymondnoodles",
       "supportedTypes": ["movie", "tv"],
@@ -182,6 +182,347 @@
       "formats": ["mp4", "mkv"],
       "logo": "https://i.postimg.cc/TwYK26jn/vegamovies.png",
       "contentLanguage": ["en", "hi"]
+    },
+    {
+      "id": "videasy",
+      "name": "Videasy",
+      "description": "Videasy stream provider with customizable overlay",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/videasy.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "vidrock",
+      "name": "Vidrock",
+      "description": "Vidrock fast streaming provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/vidrock.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "vidlink",
+      "name": "VidLink",
+      "description": "VidLink pro streaming provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/vidlink.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "vidfast",
+      "name": "VidFast",
+      "description": "VidFast streaming provider with theme support",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/vidfast.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "vidking",
+      "name": "VidKing",
+      "description": "VidKing embed provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/vidking.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "vidnest",
+      "name": "VidNest",
+      "description": "VidNest stream provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/vidnest.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "vidup",
+      "name": "VidUp",
+      "description": "VidUp stream provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/vidup.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "111movies",
+      "name": "111Movies",
+      "description": "111Movies direct embed",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/111movies.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "flixer",
+      "name": "Flixer",
+      "description": "Flixer watch provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/flixer.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "vidcore",
+      "name": "VidCore",
+      "description": "VidCore streaming with subtitles",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/vidcore.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "moviesapi",
+      "name": "MoviesApi",
+      "description": "MoviesApi direct embed provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/moviesapi.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "peachify",
+      "name": "Peachify",
+      "description": "Peachify embed streaming provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/peachify.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en", "hi"]
+    },
+    {
+      "id": "vidapi",
+      "name": "VidAPI",
+      "description": "VidAPI mobile stream provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/vidapi.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "vidplus",
+      "name": "VidPlus",
+      "description": "VidPlus player provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/vidplus.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "cinesrc",
+      "name": "CineSrc",
+      "description": "CineSrc mobile stream provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/cinesrc.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "vidzen",
+      "name": "Vidzen",
+      "description": "Vidzen stream provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/vidzen.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "cinemaos",
+      "name": "Cinemaos",
+      "description": "Cinemaos web player",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/cinemaos.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "amri",
+      "name": "Amri",
+      "description": "Amri streaming provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/amri.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "zxc",
+      "name": "Zxc",
+      "description": "Zxc stream provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/zxc.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "vlux",
+      "name": "Vlux",
+      "description": "Vlux stream provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/vlux.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "vidsrc_wtf_v4",
+      "name": "VidSrc (WTF) v4",
+      "description": "VidSrc WTF v4 Premium",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/vidsrc_wtf_v4.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "primesrc",
+      "name": "PrimeSrc",
+      "description": "PrimeSrc streaming",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/primesrc.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "vidsrc_wtf_v3",
+      "name": "VidSrc (WTF) v3",
+      "description": "VidSrc WTF v3 Multi Providers",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/vidsrc_wtf_v3.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "vidzee",
+      "name": "VidZee",
+      "description": "VidZee player embed",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/vidzee.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "lordflix",
+      "name": "Lordflix",
+      "description": "Lordflix stream provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/lordflix.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "mapple",
+      "name": "Mapple",
+      "description": "Mapple watch provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/mapple.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "smashystream",
+      "name": "Smashystream",
+      "description": "Smashystream embed provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/smashystream.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "autoembed",
+      "name": "Autoembed",
+      "description": "Autoembed tmdb provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/autoembed.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "embedmaster",
+      "name": "EmbedMaster",
+      "description": "EmbedMaster provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/embedmaster.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "vidsync",
+      "name": "Vidsync",
+      "description": "Vidsync embed provider",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/vidsync.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
+    },
+    {
+      "id": "vidsrc_wtf_v1",
+      "name": "VidSrc (WTF) v1",
+      "description": "VidSrc WTF v1 Multi Server",
+      "version": "1.0.0",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/vidsrc_wtf_v1.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "contentLanguage": ["en"]
     }
   ]
 }
