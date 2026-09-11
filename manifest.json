@@ -404,34 +404,12 @@
       "contentLanguage": ["en"]
     },
     {
-      "id": "vidsrc_wtf_v4",
-      "name": "VidSrc (WTF) v4",
-      "description": "VidSrc WTF v4 Premium",
-      "version": "1.0.0",
-      "supportedTypes": ["movie", "tv"],
-      "filename": "providers/vidsrc_wtf_v4.js",
-      "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
-    },
-    {
       "id": "primesrc",
       "name": "PrimeSrc",
       "description": "PrimeSrc streaming",
       "version": "1.0.0",
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/primesrc.js",
-      "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
-    },
-    {
-      "id": "vidsrc_wtf_v3",
-      "name": "VidSrc (WTF) v3",
-      "description": "VidSrc WTF v3 Multi Providers",
-      "version": "1.0.0",
-      "supportedTypes": ["movie", "tv"],
-      "filename": "providers/vidsrc_wtf_v3.js",
       "enabled": true,
       "formats": ["mp4", "m3u8"],
       "contentLanguage": ["en"]
@@ -514,15 +492,15 @@
       "contentLanguage": ["en"]
     },
     {
-      "id": "vidsrc_wtf_v1",
-      "name": "VidSrc (WTF) v1",
-      "description": "VidSrc WTF v1 Multi Server",
+      "id": "vidsrc-pro",
+      "name": "Vidsrc Pro",
+      "description": "Vidsrc streaming provider",
       "version": "1.0.0",
       "supportedTypes": ["movie", "tv"],
-      "filename": "providers/vidsrc_wtf_v1.js",
+      "filename": "providers/vidsrc.js",
       "enabled": true,
       "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "contentLanguage": ["en", "hi"]
     }
   ]
 }
