@@ -1,9 +1,9 @@
 // HDMovie2 Provider for Nuvio
 // Bollywood + Hollywood Hindi Dubbed + Web Series
-// Updated with .equipment domain and HLS stream fixes
+// Updated with hdmovie2a.biz domain and bug fixes
 
 var TMDB_KEY = 'd80ba92bc7cefe3359668d30d06f3305'
-var BASE = 'https://hdmovie2.com.se' // Updated Domain 🌐
+var BASE = 'https://hdmovie2a.biz' // Updated Domain 🌐
 var CDN = 'https://hdm2.ink'
 var UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36'
 
@@ -47,8 +47,8 @@ function searchSite(title, year) {
 
       while ((articleMatch = articleRegex.exec(html)) !== null) {
         var articleHtml = articleMatch[1]
-        // Updated Regex to match domain 🛠️
-        var linkMatch = articleHtml.match(/href="(https:\/\/hdmovie2\.com.se\/movies\/([^"\/]+)\/)"/)
+        // Updated Regex to dynamically match any domain configured in BASE 🛠️
+        var linkMatch = articleHtml.match(/href="(https:\/\/[^"\/]+\/movies\/([^"\/]+)\/)"/)
         if (!linkMatch) continue
         if (linkMatch[1].includes('/feed/')) continue
         var altMatch = articleHtml.match(/alt="([^"]+)"/)
@@ -136,7 +136,7 @@ function getMolopStream(playerUrl) {
         console.log('[HDMovie2] No sniff hash in molop page')
         return null
       }
-      var hash = sniffMatch[SniffMatch.length - 1]
+      var hash = sniffMatch[sniffMatch.length - 1] // Bug fixed here
       var m3u8Url = 'https://molop.art/m3u8/1/' + hash + '/master.m3u8?s=1&cache=1'
       console.log('[HDMovie2] molop hash: ' + hash)
       return {
