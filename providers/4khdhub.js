@@ -20,7 +20,7 @@ var cheerio = require("cheerio-without-node-native");
 
 var PROVIDER_NAME = "4khdhub";
 var DOMAINS_URL = "https://raw.githubusercontent.com/Xyr0nX/NGEX/refs/heads/main/manifest.json";
-var DEFAULT_MAIN_URL = "https://4khdhub.dad";
+var DEFAULT_MAIN_URL = "https://4khdhub.one";
 var TMDB_API_KEY = "439c478a771f35c05022f9feabcca01c";
 var DEBUG = false;
 
