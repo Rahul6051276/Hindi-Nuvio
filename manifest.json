@@ -16,6 +16,28 @@
       "contentLanguage": ["en"]
     },
     {
+      "id": "hdhub4u",
+      "name": "HDHub4u",
+      "description": "Direct links from HDHub4u with high-speed download support",
+      "version": "1.1.0",
+      "author": "Rahul6051276",
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
+      "filename": "providers/hdhub4u.js",
+      "enabled": true,
+      "formats": [
+        "mkv",
+        "mp4"
+      ],
+      "logo": "https://www.google.com/s2/favicons?domain=hdhub4u.me.uk&sz=128",
+      "contentLanguage": [
+        "en",
+        "hin"
+      ]
+    },
+    {
       "id": "allmovieland",
       "name": "AllMovieLand",
       "description": "AllMovieLand streaming provider with multi-language support",
