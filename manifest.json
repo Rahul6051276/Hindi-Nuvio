@@ -3,41 +3,6 @@
   "version": "1.1.0",
   "scrapers": [
     {
-      "id": "4khdhub",
-      "name": "4khdhub",
-      "description": "4KHDHub direct links",
-      "version": "1.0.0",
-      "author": "Nuvio Team",
-      "supportedTypes": ["movie", "tv"],
-      "filename": "providers/4khdhub.js",
-      "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "logo": "https://i.postimg.cc/DZpW6Xfb/4khdhub.png",
-      "contentLanguage": ["en"]
-    },
-    {
-      "id": "hdhub4u",
-      "name": "HDHub4u",
-      "description": "Direct links from HDHub4u with high-speed download support",
-      "version": "1.1.0",
-      "author": "Rahul6051276",
-      "supportedTypes": [
-        "movie",
-        "tv"
-      ],
-      "filename": "providers/hdhub4u.js",
-      "enabled": true,
-      "formats": [
-        "mkv",
-        "mp4"
-      ],
-      "logo": "https://www.google.com/s2/favicons?domain=hdhub4u.me.uk&sz=128",
-      "contentLanguage": [
-        "en",
-        "hin"
-      ]
-    },
-    {
       "id": "castle",
       "name": "Castle",
       "description": "Multi Lang provider",
@@ -64,6 +29,28 @@
       ]
     },
     {
+      "id": "hdhub4u",
+      "name": "HDHub4u",
+      "description": "Direct links from HDHub4u with high-speed download support",
+      "version": "1.1.0",
+      "author": "Rahul6051276",
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
+      "filename": "providers/hdhub4u.js",
+      "enabled": true,
+      "formats": [
+        "mkv",
+        "mp4"
+      ],
+      "logo": "https://www.google.com/s2/favicons?domain=hdhub4u.me.uk&sz=128",
+      "contentLanguage": [
+        "en",
+        "hin"
+      ]
+    },
+    {
       "id": "Torrastream",
       "name": "Torrastream",
       "description": "Torrastream streaming provider",
@@ -83,6 +70,19 @@
       "contentLanguage": [
         "en"
       ]
+    },
+    {
+      "id": "4khdhub",
+      "name": "4khdhub",
+      "description": "4KHDHub direct links",
+      "version": "1.0.0",
+      "author": "Nuvio Team",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/4khdhub.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8"],
+      "logo": "https://i.postimg.cc/DZpW6Xfb/4khdhub.png",
+      "contentLanguage": ["en"]
     },
     {
       "id": "allmovieland",
