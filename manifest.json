@@ -4,10 +4,10 @@
   "scrapers": [
     {
       "id": "castle",
-      "name": "Castle",
-      "description": "Multi Lang provider",
+      "name": "Castle TV",
+      "description": "Multi Lang provider for Movies & Web Series",
       "version": "1.0.0",
-      "author": "Rahul6051276",
+      "author": "Rahul",
       "supportedTypes": [
         "movie",
         "tv"
@@ -15,7 +15,6 @@
       "filename": "providers/castle.js",
       "enabled": true,
       "formats": [
-        "mp4",
         "m3u8"
       ],
       "logo": "https://static.hbayy.com/simple-blog-13/prod/_nuxt/big-logo.DESZ4mBj.png",
@@ -26,6 +25,27 @@
         "te",
         "ml",
         "kn"
+      ]
+    },
+    {
+      "id": "vidlink",
+      "name": "Vidlink",
+      "description": "Vidlink multi-quality streaming provider",
+      "version": "1.0.0",
+      "author": "Rahul6051276",
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
+      "filename": "providers/vidlink.js",
+      "enabled": true,
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "logo": "https://vidlink.pro/favicon.ico",
+      "contentLanguage": [
+        "en"
       ]
     },
     {
