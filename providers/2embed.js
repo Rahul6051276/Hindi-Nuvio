@@ -1,5 +1,5 @@
 /**
- * 2Embed Provider for Hindi-Nuvio with Quality Options
+ * 2Embed Provider for Hindi-Nuvio (Advanced Stream Extractor)
  */
 
 async function getStreams(id, type, season, episode) {
@@ -15,25 +15,40 @@ async function getStreams(id, type, season, episode) {
         }
 
         if (streamUrl) {
-            // Nuvio ke liye alag-alag quality ke options push karein
+            // Nuvio ke liye m3u8 format aur proper headers ke sath stream push karein
             streams.push(
                 {
                     name: '2Embed',
-                    title: '1080p [Fast Server]',
+                    title: '1080p [Fast Stream]',
                     url: streamUrl,
-                    quality: '1080p'
+                    quality: '1080p',
+                    format: 'm3u8',
+                    headers: {
+                        'Referer': 'https://www.2embed.cc/',
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+                    }
                 },
                 {
                     name: '2Embed',
                     title: '720p [HD]',
                     url: streamUrl,
-                    quality: '720p'
+                    quality: '720p',
+                    format: 'm3u8',
+                    headers: {
+                        'Referer': 'https://www.2embed.cc/',
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+                    }
                 },
                 {
                     name: '2Embed',
                     title: '480p [SD]',
                     url: streamUrl,
-                    quality: '480p'
+                    quality: '480p',
+                    format: 'mp4',
+                    headers: {
+                        'Referer': 'https://www.2embed.cc/',
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+                    }
                 }
             );
         }
