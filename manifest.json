@@ -590,6 +590,27 @@
       "enabled": true,
       "formats": ["mp4", "m3u8"],
       "contentLanguage": ["en", "hi"]
+    },
+    {
+      "id": "2embed",
+      "name": "2Embed",
+      "description": "2Embed streaming provider with multi-quality support",
+      "version": "1.0.0",
+      "author": "Rahul6051276",
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
+      "filename": "providers/2embed.js",
+      "enabled": true,
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "logo": "https://www.2embed.cc/favicon.ico",
+      "contentLanguage": [
+        "en"
+      ]
     }
   ]
 }
