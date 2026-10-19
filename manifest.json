@@ -237,6 +237,27 @@
       ]
     },
     {
+      "id": "desiflix",
+      "name": "DesiFlix",
+      "description": "DesiFlix Hindi movies and web series streaming provider",
+      "version": "1.0.0",
+      "author": "Rahul",
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
+      "filename": "providers/desiflix.js",
+      "enabled": true,
+      "formats": [
+        "m3u8",
+        "mp4"
+      ],
+      "logo": "https://i.postimg.cc/0NhjWWqT/cinestream.png",
+      "contentLanguage": [
+        "hi"
+      ]
+    },
+    {
       "id": "nuvio-vegamovies",
       "name": "VegaMovies",
       "description": "VegaMovies streaming with high-quality direct links",
