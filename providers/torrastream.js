@@ -203,6 +203,7 @@ function invokeTorrentio(imdbId, season, episode) {
           quality: extractQuality(quality),
           title,
           isHindi,
+          seeders: parseInt(seeder, 10) || 0,
           subtitles: []
         };
       }).filter((s) => s.url);
@@ -225,11 +226,13 @@ function invokeThePirateBay(imdbId, season, episode) {
         const magnet = buildMagnet(stream.infoHash, trackers, []);
         const quality = extractQuality(fullTitle);
         const isHindi = checkHindi(fullTitle);
+        const seeder = fullTitle.match(/👤\s*(\d+)/)?.[1] || "0";
         return {
           url: magnet,
           quality,
           title: `${isHindi ? "🇮🇳 HINDI | " : ""}ThePirateBay | ${stream.title || ""}`,
           isHindi,
+          seeders: parseInt(seeder, 10) || 0,
           subtitles: []
         };
       }).filter((s) => s.url);
@@ -258,6 +261,7 @@ function invokeTorrentsDB(imdbId, season, episode) {
           quality: extractQuality(quality),
           title: `${isHindi ? "🇮🇳 HINDI | " : ""}TorrentsDB | ${quality} | Seeders: ${seeder}`,
           isHindi,
+          seeders: parseInt(seeder, 10) || 0,
           subtitles: []
         };
       }).filter((s) => s.url);
@@ -297,10 +301,23 @@ function getStreams(tmdbId, mediaType, season, episode) {
       
       let allStreams = [...torrentioStreams, ...tpbStreams, ...torrentsDbStreams];
       
-      // हिंदी वाले लिंक्स को लिस्ट में सबसे ऊपर दिखाना
-      allStreams.sort((a, b) => (b.isHindi ? 1 : 0) - (a.isHindi ? 1 : 0));
+      // स्मार्ट सॉर्टिंग:
+      // 1. अगर हिंदी है तो सबसे ऊपर
+      // 2. हिंदी के अंदर: 1080p पहले, फिर 720p
+      // 3. फिर सीडर्स की संख्या
+      allStreams.sort((a, b) => {
+        if (a.isHindi !== b.isHindi) {
+          return b.isHindi ? 1 : -1;
+        }
+        if (a.isHindi && b.isHindi) {
+          if (a.quality === "1080p" && b.quality !== "1080p") return -1;
+          if (b.quality === "1080p" && a.quality !== "1080p") return 1;
+        }
+        return (b.seeders || 0) - (a.seeders || 0);
+      });
       
-      return allStreams.slice(0, 20);
+      // 20 की जगह 30 लिंक्स ताकि कोई छूट न जाए
+      return allStreams.slice(0, 30);
     } catch (e) {
       console.error("[TorraStream]", e);
       return [];
