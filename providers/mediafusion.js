@@ -25,8 +25,8 @@ var __async = (__this, __arguments, generator) => {
 
 var TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 
-// Aapka configured MediaFusion Token Base URL (Bina catalog ke direct streams)
-var MEDIAFUSION_CONFIGURED_BASE = "https://mediafusion.elfhosted.com/D-dmBinDMfreB4xdUgbBHrUlHUqfaThFgzPrh3L9bVPdCVqYm6VZTQZohNUm_x85gRZE1oHcGcqOglEaVkmxu70gZ0HE6gxvd6kUaWuG5D_TDB9yUBiBWrZPrceUtYut7pXE3RwgV5O8Dlo4j4EuKfc4npf8OSWchs--9cV_2o8kbLTipH3YLJi0ny9Qz9GVWfmIe--QqREqAmGvZV7So3s0TFsoY9xDRp19P0wSxKXnF4Htu2O46vH2L-t0bLQixwi027l04sj6Dl69ilVV2D49bXTYKCyOw43KsWVaT-TlM5BfmAScOKeolsqzewYW4fgoa-ad3XzamYVCHZN8oMv3f7tJjN6l3Uu38Us0tZ6XTLoWJ95pY68hrZLu9KK74E9wX-ov9RRG2rJJnZcTMfOJhsN5rSGSdkJYF1e12hmOshNLdpXVkAfQsiuJx7CXSGkH6XaqghKs7CrMDjl6Du-i9m0ZaXTKJhFkWpPWbCVW7xqguE4JGs4mKooxUrjsXLxzcbt-FT6Y75hJS3O8m4ZppRSzyywh6Ag1bWYCg4qJ7INH6tYTGU4v9FmR40BRa6x10TqifMH_tkAOHZegmUM8pnLJou4q-EzUks1KYpkq3MdXuh2OyQsoJqlentHD3KbcRGWvA4I-KHo7f4yb3Cdesn2OPOGkAZJybbW4KNJz5gsfMZpQWQnrg-6MvTR7s0tCHiG0e9zh0GyoGler3PmlBSI15wygnkXVirhR1bumzb1rLfXocyYni762eaU8fOv19dl3L8iIwXrizxeQRswzedL0ePNW6rTTeUNdYWkLR8VP9C2ZdpA3bpVjErf92ShwMmvLkMpSA8iW5thiJent7BQX9XkBK7FI72CgMR4lsO9qkzCdWRXv9WqLDfeTYxmDcSsKTqgu_xtMtVqTnEE2Fc2seuS4gdivPGCf3UvuKxvLkzKQ3XG9nNu7BMQUBl-DKZBEGfkpmFsnNi7RtEq83_-K8y1YrfM95N6DbFCcP7S_18MK0NnWw7LqksRjNYPBUbvLytlC_MxJrHyKjpgQ";
+// MediaFusion configured token path
+var MF_BASE = "https://mediafusion.elfhosted.com/D-dmBinDMfreB4xdUgbBHrUlHUqfaThFgzPrh3L9bVPdCVqYm6VZTQZohNUm_x85gRZE1oHcGcqOglEaVkmxu70gZ0HE6gxvd6kUaWuG5D_TDB9yUBiBWrZPrceUtYut7pXE3RwgV5O8Dlo4j4EuKfc4npf8OSWchs--9cV_2o8kbLTipH3YLJi0ny9Qz9GVWfmIe--QqREqAmGvZV7So3s0TFsoY9xDRp19P0wSxKXnF4Htu2O46vH2L-t0bLQixwi027l04sj6Dl69ilVV2D49bXTYKCyOw43KsWVaT-TlM5BfmAScOKeolsqzewYW4fgoa-ad3XzamYVCHZN8oMv3f7tJjN6l3Uu38Us0tZ6XTLoWJ95pY68hrZLu9KK74E9wX-ov9RRG2rJJnZcTMfOJhsN5rSGSdkJYF1e12hmOshNLdpXVkAfQsiuJx7CXSGkH6XaqghKs7CrMDjl6Du-i9m0ZaXTKJhFkWpPWbCVW7xqguE4JGs4mKooxUrjsXLxzcbt-FT6Y75hJS3O8m4ZppRSzyywh6Ag1bWYCg4qJ7INH6tYTGU4v9FmR40BRa6x10TqifMH_tkAOHZegmUM8pnLJou4q-EzUks1KYpkq3MdXuh2OyQsoJqlentHD3KbcRGWvA4I-KHo7f4yb3Cdesn2OPOGkAZJybbW4KNJz5gsfMZpQWQnrg-6MvTR7s0tCHiG0e9zh0GyoGler3PmlBSI15wygnkXVirhR1bumzb1rLfXocyYni762eaU8fOv19dl3L8iIwXrizxeQRswzedL0ePNW6rTTeUNdYWkLR8VP9C2ZdpA3bpVjErf92ShwMmvLkMpSA8iW5thiJent7BQX9XkBK7FI72CgMR4lsO9qkzCdWRXv9WqLDfeTYxmDcSsKTqgu_xtMtVqTnEE2Fc2seuS4gdivPGCf3UvuKxvLkzKQ3XG9nNu7BMQUBl-DKZBEGfkpmFsnNi7RtEq83_-K8y1YrfM95N6DbFCcP7S_18MK0NnWw7LqksRjNYPBUbvLytlC_MxJrHyKjpgQ";
 var TRACKER_LIST_URL = "https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_best.txt";
 
 var HEADERS = {
@@ -34,10 +34,11 @@ var HEADERS = {
   "Accept": "application/json"
 };
 
-// Hindi Audio filter logic (Regional dubs drop karke pure Hindi ko priority)
+// Hindi Audio Detection (Regional languages skip karke Hindi ko highlight karein)
 function isRealHindiAudio(rawStr) {
   if (!rawStr) return false;
 
+  // Tamil, Telugu, Malayalam, Kannada drop karein
   if (/(?:🇮🇳|\uD83C\uDDEE\uD83C\uDDF3)\s*(TA|ta|TE|te|ML|ml|KN|kn)/i.test(rawStr)) {
     return false;
   }
@@ -74,12 +75,6 @@ function extractQuality(str) {
   return "Unknown";
 }
 
-function getQualityWeight(q) {
-  if (q === "1080p") return 30;
-  if (q === "720p") return 20;
-  return 10;
-}
-
 function getTrackers() {
   return __async(this, null, function* () {
     try {
@@ -102,11 +97,13 @@ function buildMagnet(infoHash, trackers, sources) {
 function invokeMediaFusion(imdbId, season, episode) {
   return __async(this, null, function* () {
     try {
-      const path = season != null 
-        ? `series/${imdbId}:${season}:${episode}.json` 
-        : `movie/${imdbId}.json`;
+      const isSeries = season != null;
+      const type = isSeries ? "series" : "movie";
+      const idParam = isSeries ? `${imdbId}:${season}:${episode}` : imdbId;
 
-      const url = `${MEDIAFUSION_CONFIGURED_BASE}/stream/${path}`;
+      // Sahi format: https://domain/{TOKEN}/stream/{type}/{id}.json
+      const url = `${MF_BASE}/stream/${type}/${idParam}.json`;
+
       const response = yield fetch(url, { headers: HEADERS, skipSizeCheck: true });
       if (!response.ok) return [];
 
@@ -178,14 +175,10 @@ function getStreams(tmdbId, mediaType, season, episode) {
 
       const streams = yield invokeMediaFusion(imdbId, s, e);
 
-      // Sorting: Hindi sabse top, uske andar 1080p/720p weightage, fir seeders
+      // Hindi sabse top par, fir seeders
       streams.sort((a, b) => {
         if (a.isHindi !== b.isHindi) {
           return b.isHindi ? 1 : -1;
-        }
-        if (a.isHindi && b.isHindi) {
-          const qDiff = getQualityWeight(b.quality) - getQualityWeight(a.quality);
-          if (qDiff !== 0) return qDiff;
         }
         return (b.seeders || 0) - (a.seeders || 0);
       });
