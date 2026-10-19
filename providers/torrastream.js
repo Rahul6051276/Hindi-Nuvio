@@ -127,8 +127,16 @@ var require_extractors = __commonJS({
 
 // src/providers/torrastream.js
 var TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
-// Aapka Custom Configured Torrentio URL
-var TORRENTIO_API = "https://torrentio.strem.fun/language=hindi|qualityfilter=4k,threed,scr,480p,cam|limit=5|sizefilter=5gb";
+
+// Saare Hindi-rich providers + Hindi Priority + 4K Block + URL Safe Encoding (%7C)
+var TORRENTIO_CONFIG = [
+  "providers=1337x,torrentgalaxy,tgx,yts,thepiratebay,kickasstorrents",
+  "language=hindi",
+  "qualityfilter=4k,2160p,threed,scr,cam,480p",
+  "limit=15"
+].join("%7C");
+
+var TORRENTIO_API = `https://torrentio.strem.fun/${TORRENTIO_CONFIG}`;
 var THEPIRATEBAY_API = "https://thepiratebay-plus.strem.fun";
 var TORRENTSDB_API = "https://torrentsdb.com";
 var TRACKER_LIST_URL = "https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_best.txt";
@@ -144,6 +152,7 @@ function checkHindi(title) {
     t.includes("hindi") ||
     t.includes("dual") ||
     t.includes("multi") ||
+    t.includes("hin") ||
     t.includes("hin-eng") ||
     t.includes("eng-hin") ||
     t.includes("bollywood") ||
@@ -202,12 +211,11 @@ function invokeTorrentio(imdbId, season, episode) {
         const fullTitle = `${stream.name || ""} ${stream.title || ""}`;
         const quality = extractQuality(fullTitle);
         
-        // 4K aur 480p ko completely filter out karein
+        // 4K और 480p बाहर
         if (quality === "4K" || quality === "480p") return null;
 
         const seeder = fullTitle.match(/👤\s*(\d+)/)?.[1] || "0";
-        // Torrentio language=hindi se aane wale stream ya matching stream ko Hindi flag dega
-        const isHindi = checkHindi(fullTitle) || (stream.name || "").toLowerCase().includes("hindi");
+        const isHindi = checkHindi(fullTitle);
         const magnet = buildMagnet(stream.infoHash, trackers, stream.sources || []);
         const title = `${isHindi ? "🇮🇳 HINDI | " : ""}Torrentio | ${quality} | Seeders: ${seeder}`;
         return {
@@ -220,6 +228,7 @@ function invokeTorrentio(imdbId, season, episode) {
         };
       }).filter((s) => s && s.url);
     } catch (e) {
+      console.error("[Torrentio Error]", e);
       return [];
     }
   });
@@ -320,10 +329,11 @@ function getStreams(tmdbId, mediaType, season, episode) {
         (stream) => stream.quality === "1080p" || stream.quality === "720p"
       );
 
-      // सॉर्टिंग लॉजिक:
-      // 1. सबसे पहले 🇮🇳 HINDI लिंक्स
-      // 2. फिर 1080p > 720p
-      // 3. फिर सीडर्स की संख्या
+      // सॉर्टिंग:
+      // 1. 🇮🇳 HINDI 1080p
+      // 2. 🇮🇳 HINDI 720p
+      // 3. Normal 1080p
+      // 4. Normal 720p
       allStreams.sort((a, b) => {
         if (a.isHindi !== b.isHindi) {
           return b.isHindi ? 1 : -1;
@@ -333,7 +343,7 @@ function getStreams(tmdbId, mediaType, season, episode) {
         return (b.seeders || 0) - (a.seeders || 0);
       });
       
-      return allStreams.slice(0, 25);
+      return allStreams.slice(0, 30);
     } catch (e) {
       console.error("[TorraStream]", e);
       return [];
