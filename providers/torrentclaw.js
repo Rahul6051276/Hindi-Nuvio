@@ -24,7 +24,8 @@ var __async = (__this, __arguments, generator) => {
 };
 
 var TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
-var TORRENTCLAW_CONFIGURED_API = "https://addon.torrentclaw.com/api/stremio/eyJsYW5nIjoiaGkifQ";
+// Exact Stremio Addon Configured URL
+var TORRENTCLAW_CONFIGURED_API = "https://addon.torrentclaw.com/api/stremio/eyJsYW5nIjoiaGkiLCJxdWFsaXR5IjoiNzIwcCIsIm1pblNlZWRlcnMiOjUsIm1heFF1YWxpdHkiOiIxMDgwcCIsIm1heFNlZWRlcnMiOjUwLCJtYXhTaXplR2IiOjV9";
 var TRACKER_LIST_URL = "https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_best.txt";
 
 var HEADERS = {
@@ -32,31 +33,29 @@ var HEADERS = {
   "Accept": "application/json"
 };
 
-function isRealHindiAudio(rawTitle) {
-  if (!rawTitle) return false;
-  const t = rawTitle.toLowerCase();
+function isRealHindiAudio(rawStr) {
+  if (!rawStr) return false;
 
-  // Tamil ya Telugu regional dubs ko reject karein
-  if (rawTitle.includes("🇮🇳TA") || rawTitle.includes("🇮🇳ta") || 
-      rawTitle.includes("🇮🇳TE") || rawTitle.includes("🇮🇳te") ||
-      rawTitle.includes("🇮🇳ML") || rawTitle.includes("🇮🇳KN")) {
+  // Tamil (TA), Telugu (TE), Malayalam (ML), Kannada (KN) regional dubs ko drop karein
+  if (/🇮🇳\s*(TA|ta|TE|te|ML|ml|KN|kn)/i.test(rawStr)) {
     return false;
   }
 
-  // Pure Subtitle ko reject karein
-  if ((t.includes("sub") || t.includes("esub")) && !t.includes("audio") && !t.includes("dub") && !t.includes("dual")) {
-    if (t.includes("hindi sub") || t.includes("hin sub") || t.includes("hi sub")) return false;
+  const lower = rawStr.toLowerCase();
+  // Pure subtitles ko reject karein
+  if ((lower.includes("sub") || lower.includes("esub")) && !lower.includes("audio") && !lower.includes("dub") && !lower.includes("dual")) {
+    if (lower.includes("hindi sub") || lower.includes("hin sub") || lower.includes("hi sub")) return false;
   }
 
-  // TorrentClaw ka Indian flag (bina TA/TE) ya standard Hindi keywords
+  // TorrentClaw ka Indian Flag (🇮🇳) ya standard Hindi markers
   return (
-    rawTitle.includes("🇮🇳") ||
-    t.includes("hindi") ||
-    t.includes("dubbed") ||
-    t.includes("dual audio") ||
-    t.includes("hin-eng") ||
-    t.includes("eng-hin") ||
-    /\b(hin)\b/i.test(t)
+    rawStr.includes("🇮🇳") ||
+    lower.includes("hindi") ||
+    lower.includes("dubbed") ||
+    lower.includes("dual audio") ||
+    lower.includes("hin-eng") ||
+    lower.includes("eng-hin") ||
+    /\b(hin)\b/i.test(lower)
   );
 }
 
@@ -107,17 +106,22 @@ function invokeTorrentClawP2P(imdbId, season, episode) {
       if (!response.ok) return [];
       
       const res = yield response.json();
-      if (!res || !res.streams) return [];
+      if (!res || !res.streams || !Array.isArray(res.streams)) return [];
       
       const trackers = yield getTrackers();
       
       return res.streams.map((stream) => {
-        // Description, title, name sab scan hoga taaki Indian flag aur file size miss na ho
-        const fullTitle = `${stream.name || ""} ${stream.title || ""} ${stream.description || ""}`;
-        const quality = extractQuality(fullTitle);
-        const seeder = fullTitle.match(/(?:👤|👥)\s*(\d+)/)?.[1] || "0";
-        const isHindi = isRealHindiAudio(fullTitle);
-        const fileSize = extractSize(fullTitle);
+        const rawContent = [
+          stream.name || "",
+          stream.title || "",
+          stream.description || "",
+          JSON.stringify(stream.behaviorHints || {})
+        ].join("\n");
+
+        const quality = extractQuality(rawContent);
+        const seeder = rawContent.match(/(?:👤|👥)\s*(\d+)/)?.[1] || "0";
+        const isHindi = isRealHindiAudio(rawContent);
+        const fileSize = extractSize(rawContent);
         const sizeTag = fileSize ? ` | 💾 ${fileSize}` : "";
         
         let magnet = "";
@@ -169,8 +173,6 @@ function getStreams(tmdbId, mediaType, season, episode) {
       
       const streams = yield invokeTorrentClawP2P(imdbId, s, e);
       
-      // Ranking Logic:
-      // Hindi stream sabse upar aayegi chahe koi bhi resolution ya seeders ho
       streams.sort((a, b) => {
         if (a.isHindi !== b.isHindi) {
           return b.isHindi ? 1 : -1;
@@ -178,7 +180,7 @@ function getStreams(tmdbId, mediaType, season, episode) {
         return (b.seeders || 0) - (a.seeders || 0);
       });
       
-      return streams.slice(0, 30);
+      return streams.slice(0, 40);
     } catch (e) {
       console.error("[TorrentClaw P2P Provider]", e);
       return [];
