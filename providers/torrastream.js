@@ -26,11 +26,12 @@ var __async = (__this, __arguments, generator) => {
 // src/utils/extractors.js
 var require_extractors = __commonJS({
   "src/utils/extractors.js"(exports2, module2) {
+    var cheerio = require("cheerio-without-node-native");
     function unpack(packed) {
       const regex = new RegExp('eval\\s*\\(\\s*function\\s*\\(\\s*p\\s*,\\s*a\\s*,\\s*c\\s*,\\s*k\\s*,\\s*e\\s*,\\s*d\\s*\\).*?return\\s+p\\s*}\\s*\\(\\s*\\"(.*?)\\"\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*\\"(.*?)\\"\\.split\\(\\"\\Vert{}\\"\\)', "s");
       let match = packed.match(regex);
       if (!match) {
-        const regexSq = new RegExp("eval\\s*\\(\\s*function\\s*\\(\\s*p\\s*,\\s*a\\s*,\\s*c\\s*,\\s*k\\s*,\\s*e\\s*,\\s*d\\s*\\).*?return\\s+p\\s*}\\s*\\('(.*?)'\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*'(.*?)'\\.split\\('\\Vert{}'\\)", "s");
+        const regexSq = new RegExp("eval\\s*\\(\\s*function\\s*\\(\\s*p\\s*,\\s*a\\s*,\\s*c\\s*,\\s*k\\s*,\\s*e\\s*,\\s*d\\s*\\).*?return\\s+p\\s*}\\s*\\(\\s*\\'(.*?)\\'\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*\\'(.*?)\\'\\.split\\(\\'\\Vert{}\\'\\)", "s");
         match = packed.match(regexSq);
       }
       if (!match)
@@ -58,7 +59,8 @@ var require_extractors = __commonJS({
           const m = html.match(/file:\s*["'](.*?m3u8.*?)["']/);
           if (m)
             return { url: m[1], quality: "Unknown", source: "Vidmoly" };
-        } catch (e) {}
+        } catch (e) {
+        }
         return null;
       });
     }
@@ -73,7 +75,8 @@ var require_extractors = __commonJS({
             if (m)
               return { url: m[1], quality: "Unknown", source: "Filemoon" };
           }
-        } catch (e) {}
+        } catch (e) {
+        }
         return null;
       });
     }
@@ -88,7 +91,8 @@ var require_extractors = __commonJS({
             if (m)
               return { url: m[1], quality: "Unknown", source: "Streamhide" };
           }
-        } catch (e) {}
+        } catch (e) {
+        }
         return null;
       });
     }
@@ -100,7 +104,8 @@ var require_extractors = __commonJS({
           const m = html.match(/hls':\s*'(.*?)'/);
           if (m)
             return { url: m[1], quality: "Unknown", source: "Voe" };
-        } catch (e) {}
+        } catch (e) {
+        }
         return null;
       });
     }
@@ -127,56 +132,27 @@ var require_extractors = __commonJS({
 
 // src/providers/torrastream.js
 var TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
-
-// Saare Hindi-rich providers + Hindi Priority + 4K Block + URL Safe Encoding (%7C)
-var TORRENTIO_CONFIG = [
-  "providers=1337x,torrentgalaxy,tgx,yts,thepiratebay,kickasstorrents",
-  "language=hindi",
-  "qualityfilter=4k,2160p,threed,scr,cam,480p",
-  "limit=15"
-].join("%7C");
-
-var TORRENTIO_API = `https://torrentio.strem.fun/${TORRENTIO_CONFIG}`;
+var TORRENTIO_API = "https://torrentio.strem.fun";
 var THEPIRATEBAY_API = "https://thepiratebay-plus.strem.fun";
 var TORRENTSDB_API = "https://torrentsdb.com";
+var TORRENTCLAW_API = "https://torrentclaw.com/api/stremio";
 var TRACKER_LIST_URL = "https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_best.txt";
 var HEADERS = {
   "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
   "Accept": "application/json"
 };
 
-function checkHindi(title) {
-  if (!title) return false;
-  const t = title.toLowerCase();
-  return (
-    t.includes("hindi") ||
-    t.includes("dual") ||
-    t.includes("multi") ||
-    t.includes("hin") ||
-    t.includes("hin-eng") ||
-    t.includes("eng-hin") ||
-    t.includes("bollywood") ||
-    /\b(hin|dual|multi|dubbed|dub)\b/i.test(t)
-  );
-}
-
 function extractQuality(str) {
   const u = (str || "").toLowerCase();
-  if (u.includes("2160p") || u.includes("4k") || u.includes("uhd"))
+  if (u.includes("2160p") || u.includes("4k"))
     return "4K";
-  if (u.includes("1080p") || u.includes("fhd"))
+  if (u.includes("1080p"))
     return "1080p";
-  if (u.includes("720p") || u.includes("hd"))
+  if (u.includes("720p"))
     return "720p";
   if (u.includes("480p"))
     return "480p";
-  return "1080p";
-}
-
-function getQualityWeight(q) {
-  if (q === "1080p") return 30;
-  if (q === "720p") return 20;
-  return 0;
+  return "Unknown";
 }
 
 function getTrackers() {
@@ -208,27 +184,19 @@ function invokeTorrentio(imdbId, season, episode) {
         return [];
       const trackers = yield getTrackers();
       return res.streams.map((stream) => {
-        const fullTitle = `${stream.name || ""} ${stream.title || ""}`;
-        const quality = extractQuality(fullTitle);
-        
-        // 4K और 480p बाहर
-        if (quality === "4K" || quality === "480p") return null;
-
-        const seeder = fullTitle.match(/👤\s*(\d+)/)?.[1] || "0";
-        const isHindi = checkHindi(fullTitle);
+        const qualityMatch = (stream.title || "").match(/(2160p|1080p|720p)/i);
+        const quality = qualityMatch ? qualityMatch[1] : "Unknown";
+        const seeder = (stream.title || "").match(/👤\s*(\d+)/)?.[1] || "0";
         const magnet = buildMagnet(stream.infoHash, trackers, stream.sources || []);
-        const title = `${isHindi ? "🇮🇳 HINDI | " : ""}Torrentio | ${quality} | Seeders: ${seeder}`;
+        const title = `Torrentio | ${quality} | Seeders: ${seeder}`;
         return {
           url: magnet,
-          quality,
+          quality: extractQuality(quality),
           title,
-          isHindi,
-          seeders: parseInt(seeder, 10) || 0,
           subtitles: []
         };
-      }).filter((s) => s && s.url);
+      }).filter((s) => s.url);
     } catch (e) {
-      console.error("[Torrentio Error]", e);
       return [];
     }
   });
@@ -243,23 +211,15 @@ function invokeThePirateBay(imdbId, season, episode) {
         return [];
       const trackers = yield getTrackers();
       return res.streams.map((stream) => {
-        const fullTitle = `${stream.name || ""} ${stream.title || ""}`;
-        const quality = extractQuality(fullTitle);
-        
-        if (quality === "4K" || quality === "480p") return null;
-
         const magnet = buildMagnet(stream.infoHash, trackers, []);
-        const isHindi = checkHindi(fullTitle);
-        const seeder = fullTitle.match(/👤\s*(\d+)/)?.[1] || "0";
+        const quality = extractQuality(stream.title || "");
         return {
           url: magnet,
           quality,
-          title: `${isHindi ? "🇮🇳 HINDI | " : ""}ThePirateBay | ${quality} | Seeders: ${seeder}`,
-          isHindi,
-          seeders: parseInt(seeder, 10) || 0,
+          title: `ThePirateBay | ${stream.title || ""}`,
           subtitles: []
         };
-      }).filter((s) => s && s.url);
+      }).filter((s) => s.url);
     } catch (e) {
       return [];
     }
@@ -274,23 +234,46 @@ function invokeTorrentsDB(imdbId, season, episode) {
       if (!res || !res.streams)
         return [];
       return res.streams.map((stream) => {
-        const fullTitle = `${stream.name || ""} ${stream.title || ""}`;
-        const quality = extractQuality(fullTitle);
-        
-        if (quality === "4K" || quality === "480p") return null;
-
-        const seeder = fullTitle.match(/👤\s*(\d+)/)?.[1] || "0";
-        const isHindi = checkHindi(fullTitle);
+        const title = stream.title || "";
+        const qualityMatch = title.match(/(2160p|1080p|720p)/i);
+        const quality = qualityMatch ? qualityMatch[1] : "Unknown";
+        const seeder = title.match(/👤\s*(\d+)/)?.[1] || "0";
         const magnet = buildMagnet(stream.infoHash, [], stream.sources || []);
         return {
           url: magnet,
-          quality,
-          title: `${isHindi ? "🇮🇳 HINDI | " : ""}TorrentsDB | ${quality} | Seeders: ${seeder}`,
-          isHindi,
-          seeders: parseInt(seeder, 10) || 0,
+          quality: extractQuality(quality),
+          title: `TorrentsDB | ${quality} | Seeders: ${seeder}`,
           subtitles: []
         };
-      }).filter((s) => s && s.url);
+      }).filter((s) => s.url);
+    } catch (e) {
+      return [];
+    }
+  });
+}
+
+function invokeTorrentClaw(imdbId, season, episode) {
+  return __async(this, null, function* () {
+    try {
+      const url = season != null ? `${TORRENTCLAW_API}/stream/series/${imdbId}:${season}:${episode}.json` : `${TORRENTCLAW_API}/stream/movie/${imdbId}.json`;
+      const res = yield (yield fetch(url, { headers: HEADERS, skipSizeCheck: true })).json();
+      if (!res || !res.streams)
+        return [];
+      const trackers = yield getTrackers();
+      return res.streams.map((stream) => {
+        const fullTitle = `${stream.name || ""} ${stream.title || ""}`;
+        const qualityMatch = fullTitle.match(/(2160p|1080p|720p|480p)/i);
+        const quality = qualityMatch ? qualityMatch[1] : "Unknown";
+        const seeder = fullTitle.match(/👤\s*(\d+)/)?.[1] || "0";
+        const magnet = stream.url && stream.url.startsWith("magnet:") ? stream.url : buildMagnet(stream.infoHash, trackers, stream.sources || []);
+        const title = `TorrentClaw | ${quality} | Seeders: ${seeder}`;
+        return {
+          url: magnet,
+          quality: extractQuality(quality),
+          title,
+          subtitles: []
+        };
+      }).filter((s) => s.url);
     } catch (e) {
       return [];
     }
@@ -319,31 +302,15 @@ function getStreams(tmdbId, mediaType, season, episode) {
       const s = isTV ? season : null;
       const e = isTV ? episode : null;
       
-      const [torrentioStreams, tpbStreams, torrentsDbStreams] = yield Promise.all([
+      const [torrentioStreams, tpbStreams, torrentsDbStreams, torrentClawStreams] = yield Promise.all([
         invokeTorrentio(imdbId, s, e),
         invokeThePirateBay(imdbId, s, e),
-        invokeTorrentsDB(imdbId, s, e)
+        invokeTorrentsDB(imdbId, s, e),
+        invokeTorrentClaw(imdbId, s, e)
       ]);
       
-      let allStreams = [...torrentioStreams, ...tpbStreams, ...torrentsDbStreams].filter(
-        (stream) => stream.quality === "1080p" || stream.quality === "720p"
-      );
-
-      // सॉर्टिंग:
-      // 1. 🇮🇳 HINDI 1080p
-      // 2. 🇮🇳 HINDI 720p
-      // 3. Normal 1080p
-      // 4. Normal 720p
-      allStreams.sort((a, b) => {
-        if (a.isHindi !== b.isHindi) {
-          return b.isHindi ? 1 : -1;
-        }
-        const qDiff = getQualityWeight(b.quality) - getQualityWeight(a.quality);
-        if (qDiff !== 0) return qDiff;
-        return (b.seeders || 0) - (a.seeders || 0);
-      });
-      
-      return allStreams.slice(0, 30);
+      const allStreams = [...torrentioStreams, ...tpbStreams, ...torrentsDbStreams, ...torrentClawStreams];
+      return allStreams.slice(0, 20);
     } catch (e) {
       console.error("[TorraStream]", e);
       return [];
