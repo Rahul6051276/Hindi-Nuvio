@@ -154,7 +154,7 @@ function extractQuality(str) {
 }
 function getTrackers() {
   return __async(this, null, function* () {
-    try {
+    try {i
       const text = yield (yield fetch(TRACKER_LIST_URL, { skipSizeCheck: true })).text();
       return text.split("\n").filter((l, i) => i % 2 === 0 && l.trim()).slice(0, 10);
     } catch (e) {
