@@ -136,6 +136,19 @@ var HEADERS = {
   "Accept": "application/json"
 };
 
+function checkHindi(title) {
+  if (!title) return false;
+  const t = title.toLowerCase();
+  return (
+    t.includes("hindi") ||
+    t.includes("dual audio") ||
+    t.includes("multi audio") ||
+    t.includes("hin-eng") ||
+    t.includes("eng-hin") ||
+    /\b(hin|dual|multi|dubbed)\b/i.test(t)
+  );
+}
+
 function extractQuality(str) {
   const u = (str || "").toLowerCase();
   if (u.includes("2160p") || u.includes("4k"))
@@ -178,15 +191,18 @@ function invokeTorrentio(imdbId, season, episode) {
         return [];
       const trackers = yield getTrackers();
       return res.streams.map((stream) => {
-        const qualityMatch = (stream.title || "").match(/(2160p|1080p|720p)/i);
+        const fullTitle = `${stream.name || ""} ${stream.title || ""}`;
+        const qualityMatch = fullTitle.match(/(2160p|1080p|720p|480p)/i);
         const quality = qualityMatch ? qualityMatch[1] : "Unknown";
-        const seeder = (stream.title || "").match(/👤\s*(\d+)/)?.[1] || "0";
+        const seeder = fullTitle.match(/👤\s*(\d+)/)?.[1] || "0";
+        const isHindi = checkHindi(fullTitle);
         const magnet = buildMagnet(stream.infoHash, trackers, stream.sources || []);
-        const title = `Torrentio | ${quality} | Seeders: ${seeder}`;
+        const title = `${isHindi ? "🇮🇳 HINDI | " : ""}Torrentio | ${quality} | Seeders: ${seeder}`;
         return {
           url: magnet,
           quality: extractQuality(quality),
           title,
+          isHindi,
           subtitles: []
         };
       }).filter((s) => s.url);
@@ -205,12 +221,15 @@ function invokeThePirateBay(imdbId, season, episode) {
         return [];
       const trackers = yield getTrackers();
       return res.streams.map((stream) => {
+        const fullTitle = `${stream.name || ""} ${stream.title || ""}`;
         const magnet = buildMagnet(stream.infoHash, trackers, []);
-        const quality = extractQuality(stream.title || "");
+        const quality = extractQuality(fullTitle);
+        const isHindi = checkHindi(fullTitle);
         return {
           url: magnet,
           quality,
-          title: `ThePirateBay | ${stream.title || ""}`,
+          title: `${isHindi ? "🇮🇳 HINDI | " : ""}ThePirateBay | ${stream.title || ""}`,
+          isHindi,
           subtitles: []
         };
       }).filter((s) => s.url);
@@ -227,23 +246,22 @@ function invokeTorrentsDB(imdbId, season, episode) {
       const res = yield (yield fetch(url, { headers: HEADERS, skipSizeCheck: true })).json();
       if (!res || !res.streams)
         return [];
-      const trackers = yield getTrackers();
       return res.streams.map((stream) => {
-        const title = stream.title || "";
-        const qualityMatch = title.match(/(2160p|1080p|720p|480p)/i);
+        const fullTitle = `${stream.name || ""} ${stream.title || ""}`;
+        const qualityMatch = fullTitle.match(/(2160p|1080p|720p|480p)/i);
         const quality = qualityMatch ? qualityMatch[1] : "Unknown";
-        const seeder = title.match(/👤\s*(\d+)/)?.[1] || "0";
-        // यहाँ ट्रैकर्स जोड़े गए हैं
-        const magnet = stream.url && stream.url.startsWith("magnet:") ? stream.url : buildMagnet(stream.infoHash, trackers, stream.sources || []);
+        const seeder = fullTitle.match(/👤\s*(\d+)/)?.[1] || "0";
+        const isHindi = checkHindi(fullTitle);
+        const magnet = buildMagnet(stream.infoHash, [], stream.sources || []);
         return {
           url: magnet,
           quality: extractQuality(quality),
-          title: `TorrentsDB | ${quality} | Seeders: ${seeder}`,
+          title: `${isHindi ? "🇮🇳 HINDI | " : ""}TorrentsDB | ${quality} | Seeders: ${seeder}`,
+          isHindi,
           subtitles: []
         };
       }).filter((s) => s.url);
     } catch (e) {
-      console.error("[TorrentsDB Error]", e);
       return [];
     }
   });
@@ -272,19 +290,17 @@ function getStreams(tmdbId, mediaType, season, episode) {
       const e = isTV ? episode : null;
       
       const [torrentioStreams, tpbStreams, torrentsDbStreams] = yield Promise.all([
-        invokeTorrentio(imdbId, s, e).catch(() => []),
-        invokeThePirateBay(imdbId, s, e).catch(() => []),
-        invokeTorrentsDB(imdbId, s, e).catch(() => [])
+        invokeTorrentio(imdbId, s, e),
+        invokeThePirateBay(imdbId, s, e),
+        invokeTorrentsDB(imdbId, s, e)
       ]);
       
-      // सब प्रोवाइडर्स के लिंक्स को मिक्स किया ताकि TorrentsDB के लिंक्स कटें नहीं
-      const allStreams = [
-        ...torrentsDbStreams, // TorrentsDB को आगे रखा ताकि इसके लिंक्स पक्के दिखें
-        ...torrentioStreams,
-        ...tpbStreams
-      ];
+      let allStreams = [...torrentioStreams, ...tpbStreams, ...torrentsDbStreams];
       
-      return allStreams.slice(0, 30);
+      // हिंदी वाले लिंक्स को लिस्ट में सबसे ऊपर दिखाना
+      allStreams.sort((a, b) => (b.isHindi ? 1 : 0) - (a.isHindi ? 1 : 0));
+      
+      return allStreams.slice(0, 20);
     } catch (e) {
       console.error("[TorraStream]", e);
       return [];
