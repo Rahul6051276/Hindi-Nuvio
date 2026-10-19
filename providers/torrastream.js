@@ -26,12 +26,11 @@ var __async = (__this, __arguments, generator) => {
 // src/utils/extractors.js
 var require_extractors = __commonJS({
   "src/utils/extractors.js"(exports2, module2) {
-    var cheerio = require("cheerio-without-node-native");
     function unpack(packed) {
       const regex = new RegExp('eval\\s*\\(\\s*function\\s*\\(\\s*p\\s*,\\s*a\\s*,\\s*c\\s*,\\s*k\\s*,\\s*e\\s*,\\s*d\\s*\\).*?return\\s+p\\s*}\\s*\\(\\s*\\"(.*?)\\"\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*\\"(.*?)\\"\\.split\\(\\"\\Vert{}\\"\\)', "s");
       let match = packed.match(regex);
       if (!match) {
-        const regexSq = new RegExp("eval\\s*\\(\\s*function\\s*\\(\\s*p\\s*,\\s*a\\s*,\\s*c\\s*,\\s*k\\s*,\\s*e\\s*,\\s*d\\s*\\).*?return\\s+p\\s*}\\s*\\(\\s*\\'(.*?)\\'\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*\\'(.*?)\\'\\.split\\(\\'\\Vert{}\\'\\)", "s");
+        const regexSq = new RegExp("eval\\s*\\(\\s*function\\s*\\(\\s*p\\s*,\\s*a\\s*,\\s*c\\s*,\\s*k\\s*,\\s*e\\s*,\\s*d\\s*\\).*?return\\s+p\\s*}\\s*\\('(.*?)'\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*'(.*?)'\\.split\\('\\Vert{}'\\)", "s");
         match = packed.match(regexSq);
       }
       if (!match)
@@ -59,8 +58,7 @@ var require_extractors = __commonJS({
           const m = html.match(/file:\s*["'](.*?m3u8.*?)["']/);
           if (m)
             return { url: m[1], quality: "Unknown", source: "Vidmoly" };
-        } catch (e) {
-        }
+        } catch (e) {}
         return null;
       });
     }
@@ -75,8 +73,7 @@ var require_extractors = __commonJS({
             if (m)
               return { url: m[1], quality: "Unknown", source: "Filemoon" };
           }
-        } catch (e) {
-        }
+        } catch (e) {}
         return null;
       });
     }
@@ -91,8 +88,7 @@ var require_extractors = __commonJS({
             if (m)
               return { url: m[1], quality: "Unknown", source: "Streamhide" };
           }
-        } catch (e) {
-        }
+        } catch (e) {}
         return null;
       });
     }
@@ -104,8 +100,7 @@ var require_extractors = __commonJS({
           const m = html.match(/hls':\s*'(.*?)'/);
           if (m)
             return { url: m[1], quality: "Unknown", source: "Voe" };
-        } catch (e) {
-        }
+        } catch (e) {}
         return null;
       });
     }
@@ -140,6 +135,7 @@ var HEADERS = {
   "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
   "Accept": "application/json"
 };
+
 function extractQuality(str) {
   const u = (str || "").toLowerCase();
   if (u.includes("2160p") || u.includes("4k"))
@@ -152,6 +148,7 @@ function extractQuality(str) {
     return "480p";
   return "Unknown";
 }
+
 function getTrackers() {
   return __async(this, null, function* () {
     try {
@@ -162,6 +159,7 @@ function getTrackers() {
     }
   });
 }
+
 function buildMagnet(infoHash, trackers, sources) {
   if (!infoHash)
     return "";
@@ -170,6 +168,7 @@ function buildMagnet(infoHash, trackers, sources) {
   const trStr = allTrackers.map((t) => `&tr=${encodeURIComponent(t)}`).join("");
   return `magnet:?xt=urn:btih:${infoHash}${trStr}`;
 }
+
 function invokeTorrentio(imdbId, season, episode) {
   return __async(this, null, function* () {
     try {
@@ -196,6 +195,7 @@ function invokeTorrentio(imdbId, season, episode) {
     }
   });
 }
+
 function invokeThePirateBay(imdbId, season, episode) {
   return __async(this, null, function* () {
     try {
@@ -219,6 +219,7 @@ function invokeThePirateBay(imdbId, season, episode) {
     }
   });
 }
+
 function invokeTorrentsDB(imdbId, season, episode) {
   return __async(this, null, function* () {
     try {
@@ -226,12 +227,14 @@ function invokeTorrentsDB(imdbId, season, episode) {
       const res = yield (yield fetch(url, { headers: HEADERS, skipSizeCheck: true })).json();
       if (!res || !res.streams)
         return [];
+      const trackers = yield getTrackers();
       return res.streams.map((stream) => {
         const title = stream.title || "";
-        const qualityMatch = title.match(/(2160p|1080p|720p)/i);
+        const qualityMatch = title.match(/(2160p|1080p|720p|480p)/i);
         const quality = qualityMatch ? qualityMatch[1] : "Unknown";
         const seeder = title.match(/👤\s*(\d+)/)?.[1] || "0";
-        const magnet = buildMagnet(stream.infoHash, [], stream.sources || []);
+        // यहाँ ट्रैकर्स जोड़े गए हैं
+        const magnet = stream.url && stream.url.startsWith("magnet:") ? stream.url : buildMagnet(stream.infoHash, trackers, stream.sources || []);
         return {
           url: magnet,
           quality: extractQuality(quality),
@@ -240,10 +243,12 @@ function invokeTorrentsDB(imdbId, season, episode) {
         };
       }).filter((s) => s.url);
     } catch (e) {
+      console.error("[TorrentsDB Error]", e);
       return [];
     }
   });
 }
+
 function getImdbId(tmdbId, mediaType) {
   return __async(this, null, function* () {
     try {
@@ -255,6 +260,7 @@ function getImdbId(tmdbId, mediaType) {
     }
   });
 }
+
 function getStreams(tmdbId, mediaType, season, episode) {
   return __async(this, null, function* () {
     try {
@@ -264,19 +270,28 @@ function getStreams(tmdbId, mediaType, season, episode) {
       const isTV = mediaType === "tv";
       const s = isTV ? season : null;
       const e = isTV ? episode : null;
+      
       const [torrentioStreams, tpbStreams, torrentsDbStreams] = yield Promise.all([
-        invokeTorrentio(imdbId, s, e),
-        invokeThePirateBay(imdbId, s, e),
-        invokeTorrentsDB(imdbId, s, e)
+        invokeTorrentio(imdbId, s, e).catch(() => []),
+        invokeThePirateBay(imdbId, s, e).catch(() => []),
+        invokeTorrentsDB(imdbId, s, e).catch(() => [])
       ]);
-      const allStreams = [...torrentioStreams, ...tpbStreams, ...torrentsDbStreams];
-      return allStreams.slice(0, 15);
+      
+      // सब प्रोवाइडर्स के लिंक्स को मिक्स किया ताकि TorrentsDB के लिंक्स कटें नहीं
+      const allStreams = [
+        ...torrentsDbStreams, // TorrentsDB को आगे रखा ताकि इसके लिंक्स पक्के दिखें
+        ...torrentioStreams,
+        ...tpbStreams
+      ];
+      
+      return allStreams.slice(0, 30);
     } catch (e) {
       console.error("[TorraStream]", e);
       return [];
     }
   });
 }
+
 var { extract } = require_extractors();
 function wrappedGetStreams(...args) {
   return __async(this, null, function* () {
@@ -298,4 +313,5 @@ function wrappedGetStreams(...args) {
     return finalStreams;
   });
 }
+
 module.exports = { getStreams: wrappedGetStreams };
