@@ -258,6 +258,29 @@
       ]
     },
     {
+      "id": "mediafusion",
+      "name": "MediaFusion",
+      "description": "MediaFusion configured streams with Hindi audio priority",
+      "version": "1.0.0",
+      "author": "Rahul",
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
+      "filename": "providers/mediafusion.js",
+      "enabled": true,
+      "formats": [
+        "mp4",
+        "mkv",
+        "m3u8"
+      ],
+      "logo": "https://mediafusion.elfhosted.com/static/media/logo.png",
+      "contentLanguage": [
+        "hi",
+        "en"
+      ]
+    },
+    {
       "id": "nuvio-vegamovies",
       "name": "VegaMovies",
       "description": "VegaMovies streaming with high-quality direct links",
