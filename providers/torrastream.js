@@ -136,17 +136,15 @@ var HEADERS = {
   "Accept": "application/json"
 };
 
-// सख्त हिंदी जांच - फर्जी झंडे रोकने के लिए
+// Sakht Hindi check
 function isRealHindiAudio(rawTitle) {
   if (!rawTitle) return false;
   const t = rawTitle.toLowerCase();
 
-  // अगर सिर्फ सबटाइटल का ज़िक्र है और ऑडियो नहीं है तो फ़ॉल्स करें
   if ((t.includes("sub") || t.includes("esub")) && !t.includes("audio") && !t.includes("dub") && !t.includes("dual")) {
     if (t.includes("hindi sub") || t.includes("hin sub")) return false;
   }
 
-  // पक्के हिंदी ऑडियो के कीवर्ड्स
   return (
     t.includes("hindi audio") ||
     t.includes("hindi dubbed") ||
@@ -163,6 +161,13 @@ function isRealHindiAudio(rawTitle) {
     /\b(hin)\s*(2\.0|5\.1|aac|ac3|dts|ddp|org)\b/i.test(t) ||
     (t.includes("dual audio") && (t.includes("bollywood") || t.includes("desiremovies") || t.includes("katmovie")))
   );
+}
+
+// File Size nikaalne ka function
+function extractSize(str) {
+  if (!str) return "";
+  const match = str.match(/(?:💾\s*)?([0-9]+(?:\.[0-9]+)?\s*(?:GB|MB|GiB|MiB))\b/i);
+  return match ? match[1].trim() : "";
 }
 
 function extractQuality(str) {
@@ -212,10 +217,11 @@ function invokeTorrentio(imdbId, season, episode) {
         const quality = qualityMatch ? qualityMatch[1] : "Unknown";
         const seeder = fullTitle.match(/👤\s*(\d+)/)?.[1] || "0";
         const isHindi = isRealHindiAudio(fullTitle);
+        const fileSize = extractSize(fullTitle);
+        const sizeTag = fileSize ? ` | 💾 ${fileSize}` : "";
         const magnet = buildMagnet(stream.infoHash, trackers, stream.sources || []);
         
-        // साफ़ टाइटल ताकि पहचानना आसान हो
-        const title = `${isHindi ? "🇮🇳 HINDI | " : ""}Torrentio | ${quality} | Seeders: ${seeder}`;
+        const title = `${isHindi ? "🇮🇳 HINDI | " : ""}Torrentio | ${quality}${sizeTag} | Seeders: ${seeder}`;
         return {
           url: magnet,
           quality: extractQuality(quality),
@@ -244,11 +250,13 @@ function invokeThePirateBay(imdbId, season, episode) {
         const magnet = buildMagnet(stream.infoHash, trackers, []);
         const quality = extractQuality(fullTitle);
         const isHindi = isRealHindiAudio(fullTitle);
+        const fileSize = extractSize(fullTitle);
+        const sizeTag = fileSize ? ` | 💾 ${fileSize}` : "";
         const seeder = fullTitle.match(/👤\s*(\d+)/)?.[1] || "0";
         return {
           url: magnet,
           quality,
-          title: `${isHindi ? "🇮🇳 HINDI | " : ""}ThePirateBay | ${stream.title || quality}`,
+          title: `${isHindi ? "🇮🇳 HINDI | " : ""}ThePirateBay | ${quality}${sizeTag} | Seeders: ${seeder}`,
           isHindi,
           seeders: parseInt(seeder, 10) || 0,
           subtitles: []
@@ -273,11 +281,13 @@ function invokeTorrentsDB(imdbId, season, episode) {
         const quality = qualityMatch ? qualityMatch[1] : "Unknown";
         const seeder = fullTitle.match(/👤\s*(\d+)/)?.[1] || "0";
         const isHindi = isRealHindiAudio(fullTitle);
+        const fileSize = extractSize(fullTitle);
+        const sizeTag = fileSize ? ` | 💾 ${fileSize}` : "";
         const magnet = buildMagnet(stream.infoHash, [], stream.sources || []);
         return {
           url: magnet,
           quality: extractQuality(quality),
-          title: `${isHindi ? "🇮🇳 HINDI | " : ""}TorrentsDB | ${quality} | Seeders: ${seeder}`,
+          title: `${isHindi ? "🇮🇳 HINDI | " : ""}TorrentsDB | ${quality}${sizeTag} | Seeders: ${seeder}`,
           isHindi,
           seeders: parseInt(seeder, 10) || 0,
           subtitles: []
@@ -319,7 +329,7 @@ function getStreams(tmdbId, mediaType, season, episode) {
       
       let allStreams = [...torrentioStreams, ...tpbStreams, ...torrentsDbStreams];
       
-      // सिर्फ असली हिंदी को सबसे ऊपर रखेगा
+      // Asli Hindi sabse upar, aur seeders wise sort
       allStreams.sort((a, b) => {
         if (a.isHindi !== b.isHindi) {
           return b.isHindi ? 1 : -1;
