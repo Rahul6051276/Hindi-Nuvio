@@ -24,8 +24,9 @@ var __async = (__this, __arguments, generator) => {
 };
 
 var TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
-// TorrentClaw P2P Hindi language priority endpoints
-var TORRENTCLAW_P2P_API = "https://torrentclaw.com/api/stremio";
+
+// आपका कॉन्फ़िगर किया हुआ P2P Hindi EndPoint
+var TORRENTCLAW_CONFIGURED_API = "https://addon.torrentclaw.com/api/stremio/eyJsYW5nIjoiaGkifQ";
 var TRACKER_LIST_URL = "https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_best.txt";
 
 var HEADERS = {
@@ -33,50 +34,41 @@ var HEADERS = {
   "Accept": "application/json"
 };
 
-// South Dubbed, Dual Audio aur Hindi Dubbed ke sabhi tags
+// स्मार्ट हिंदी और डब ऑडियो डिटेक्शन
 function isRealHindiAudio(rawTitle) {
   if (!rawTitle) return false;
   const t = rawTitle.toLowerCase();
 
-  // Sirf subtitle hone par reject karein
+  // अगर सिर्फ सबटाइटल का ज़िक्र हो तो हटा दें
   if ((t.includes("sub") || t.includes("esub")) && !t.includes("audio") && !t.includes("dub") && !t.includes("dual")) {
     if (t.includes("hindi sub") || t.includes("hin sub") || t.includes("hi sub")) return false;
   }
 
-  // South dubbed + Hollywood Hindi Dubbed patterns
   return (
-    t.includes("hindi audio") ||
-    t.includes("hindi dubbed") ||
-    t.includes("hindi-dubbed") ||
-    t.includes("dubbed in hindi") ||
-    t.includes("dual audio [hindi") ||
-    t.includes("dual audio hindi") ||
-    t.includes("multi audio") ||
-    t.includes("hin-eng") ||
-    t.includes("eng-hin") ||
-    t.includes("hin-tam") ||
-    t.includes("tam-hin") ||
-    t.includes("hin-tel") ||
-    t.includes("tel-hin") ||
-    t.includes("hin/eng") ||
-    t.includes("eng/hin") ||
-    t.includes("[hindi]") ||
-    t.includes("(hindi)") ||
-    /\bhindi\b/i.test(t) ||
+    rawTitle.includes("⭐") ||         // TorrentClaw का पसंदीदा भाषा स्टार टैग
+    t.includes("hindi") ||
+    t.includes("dubbed") ||
+    t.includes("dual") ||
+    t.includes("multi") ||
     /\b(hin)\b/i.test(t) ||
     /\b(hi)\b/i.test(rawTitle) ||
-    /\b(dubbed)\b/i.test(t) ||
-    /\b(hin)\s*(2\.0|5\.1|aac|ac3|dts|ddp|org)\b/i.test(t) ||
-    (t.includes("dual audio") && (t.includes("south") || t.includes("goldmines") || t.includes("desiremovies") || t.includes("katmovie") || t.includes("vegamovies")))
+    t.includes("south") ||
+    t.includes("goldmines") ||
+    t.includes("desiremovies") ||
+    t.includes("katmovie") ||
+    t.includes("vegamovies") ||
+    t.includes("bolly")
   );
 }
 
+// फ़ाइल साइज़ निकालने का लॉजिक
 function extractSize(str) {
   if (!str) return "";
   const match = str.match(/(?:💾\s*)?([0-9]+(?:\.[0-9]+)?\s*(?:GB|MB|GiB|MiB))\b/i);
   return match ? match[1].trim() : "";
 }
 
+// क्वालिटी निकालने का लॉजिक
 function extractQuality(str) {
   const u = (str || "").toLowerCase();
   if (u.includes("2160p") || u.includes("4k"))
@@ -96,6 +88,7 @@ function getQualityWeight(q) {
   return 10;
 }
 
+// ट्रैकर्स फ़ेचर
 function getTrackers() {
   return __async(this, null, function* () {
     try {
@@ -107,6 +100,7 @@ function getTrackers() {
   });
 }
 
+// मैग्नेट लिंक बिल्डर
 function buildMagnet(infoHash, trackers, sources) {
   if (!infoHash)
     return "";
@@ -116,15 +110,15 @@ function buildMagnet(infoHash, trackers, sources) {
   return `magnet:?xt=urn:btih:${infoHash}${trStr}`;
 }
 
+// P2P फ़ेच फ़ंक्शन
 function invokeTorrentClawP2P(imdbId, season, episode) {
   return __async(this, null, function* () {
     try {
-      // Dono tarike se query hit karenge: general aur language flag ke sath
       const path = season != null 
         ? `series/${imdbId}:${season}:${episode}.json` 
         : `movie/${imdbId}.json`;
 
-      const url = `${TORRENTCLAW_P2P_API}/stream/${path}`;
+      const url = `${TORRENTCLAW_CONFIGURED_API}/stream/${path}`;
         
       const response = yield fetch(url, { headers: HEADERS, skipSizeCheck: true });
       if (!response.ok) return [];
@@ -192,10 +186,10 @@ function getStreams(tmdbId, mediaType, season, episode) {
       
       const streams = yield invokeTorrentClawP2P(imdbId, s, e);
       
-      // Ranking:
-      // 1. Hindi / Dubbed sabse upar
-      // 2. Usme 1080p/720p
-      // 3. Fir Seeders
+      // रैंकिंग:
+      // 1. हिंदी / डब सबसे ऊपर
+      // 2. उसमें 1080p फिर 720p
+      // 3. फिर सबसे ज़्यादा सीडर्स
       streams.sort((a, b) => {
         if (a.isHindi !== b.isHindi) {
           return b.isHindi ? 1 : -1;
