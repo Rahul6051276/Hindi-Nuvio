@@ -210,7 +210,30 @@
       ],
       "logo": "https://i.imgur.com/9bGkGMi.png",
       "contentLanguage": [
-        "en"
+        "en",
+        "hi"
+      ]
+    },
+    {
+      "id": "torrentclaw",
+      "name": "TorrentClaw",
+      "description": "TorrentClaw P2P provider with multi-language and Hindi support",
+      "version": "1.0.0",
+      "author": "Rahul",
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
+      "filename": "providers/torrentclaw.js",
+      "enabled": true,
+      "formats": [
+        "mp4",
+        "mkv"
+      ],
+      "logo": "https://torrentclaw.com/logo.png",
+      "contentLanguage": [
+        "en",
+        "hi"
       ]
     },
     {
