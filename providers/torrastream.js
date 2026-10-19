@@ -136,16 +136,32 @@ var HEADERS = {
   "Accept": "application/json"
 };
 
-function checkHindi(title) {
-  if (!title) return false;
-  const t = title.toLowerCase();
+// सख्त हिंदी जांच - फर्जी झंडे रोकने के लिए
+function isRealHindiAudio(rawTitle) {
+  if (!rawTitle) return false;
+  const t = rawTitle.toLowerCase();
+
+  // अगर सिर्फ सबटाइटल का ज़िक्र है और ऑडियो नहीं है तो फ़ॉल्स करें
+  if ((t.includes("sub") || t.includes("esub")) && !t.includes("audio") && !t.includes("dub") && !t.includes("dual")) {
+    if (t.includes("hindi sub") || t.includes("hin sub")) return false;
+  }
+
+  // पक्के हिंदी ऑडियो के कीवर्ड्स
   return (
-    t.includes("hindi") ||
-    t.includes("dual audio") ||
-    t.includes("multi audio") ||
+    t.includes("hindi audio") ||
+    t.includes("hindi dubbed") ||
+    t.includes("hindi-dubbed") ||
+    t.includes("dual audio [hindi") ||
+    t.includes("dual audio hindi") ||
     t.includes("hin-eng") ||
     t.includes("eng-hin") ||
-    /\b(hin|dual|multi|dubbed)\b/i.test(t)
+    t.includes("hin/eng") ||
+    t.includes("eng/hin") ||
+    t.includes("[hindi]") ||
+    t.includes("(hindi)") ||
+    /\bhindi\b/i.test(t) ||
+    /\b(hin)\s*(2\.0|5\.1|aac|ac3|dts|ddp|org)\b/i.test(t) ||
+    (t.includes("dual audio") && (t.includes("bollywood") || t.includes("desiremovies") || t.includes("katmovie")))
   );
 }
 
@@ -195,8 +211,10 @@ function invokeTorrentio(imdbId, season, episode) {
         const qualityMatch = fullTitle.match(/(2160p|1080p|720p|480p)/i);
         const quality = qualityMatch ? qualityMatch[1] : "Unknown";
         const seeder = fullTitle.match(/👤\s*(\d+)/)?.[1] || "0";
-        const isHindi = checkHindi(fullTitle);
+        const isHindi = isRealHindiAudio(fullTitle);
         const magnet = buildMagnet(stream.infoHash, trackers, stream.sources || []);
+        
+        // साफ़ टाइटल ताकि पहचानना आसान हो
         const title = `${isHindi ? "🇮🇳 HINDI | " : ""}Torrentio | ${quality} | Seeders: ${seeder}`;
         return {
           url: magnet,
@@ -225,12 +243,12 @@ function invokeThePirateBay(imdbId, season, episode) {
         const fullTitle = `${stream.name || ""} ${stream.title || ""}`;
         const magnet = buildMagnet(stream.infoHash, trackers, []);
         const quality = extractQuality(fullTitle);
-        const isHindi = checkHindi(fullTitle);
+        const isHindi = isRealHindiAudio(fullTitle);
         const seeder = fullTitle.match(/👤\s*(\d+)/)?.[1] || "0";
         return {
           url: magnet,
           quality,
-          title: `${isHindi ? "🇮🇳 HINDI | " : ""}ThePirateBay | ${stream.title || ""}`,
+          title: `${isHindi ? "🇮🇳 HINDI | " : ""}ThePirateBay | ${stream.title || quality}`,
           isHindi,
           seeders: parseInt(seeder, 10) || 0,
           subtitles: []
@@ -254,7 +272,7 @@ function invokeTorrentsDB(imdbId, season, episode) {
         const qualityMatch = fullTitle.match(/(2160p|1080p|720p|480p)/i);
         const quality = qualityMatch ? qualityMatch[1] : "Unknown";
         const seeder = fullTitle.match(/👤\s*(\d+)/)?.[1] || "0";
-        const isHindi = checkHindi(fullTitle);
+        const isHindi = isRealHindiAudio(fullTitle);
         const magnet = buildMagnet(stream.infoHash, [], stream.sources || []);
         return {
           url: magnet,
@@ -301,23 +319,15 @@ function getStreams(tmdbId, mediaType, season, episode) {
       
       let allStreams = [...torrentioStreams, ...tpbStreams, ...torrentsDbStreams];
       
-      // स्मार्ट सॉर्टिंग:
-      // 1. अगर हिंदी है तो सबसे ऊपर
-      // 2. हिंदी के अंदर: 1080p पहले, फिर 720p
-      // 3. फिर सीडर्स की संख्या
+      // सिर्फ असली हिंदी को सबसे ऊपर रखेगा
       allStreams.sort((a, b) => {
         if (a.isHindi !== b.isHindi) {
           return b.isHindi ? 1 : -1;
         }
-        if (a.isHindi && b.isHindi) {
-          if (a.quality === "1080p" && b.quality !== "1080p") return -1;
-          if (b.quality === "1080p" && a.quality !== "1080p") return 1;
-        }
         return (b.seeders || 0) - (a.seeders || 0);
       });
       
-      // 20 की जगह 30 लिंक्स ताकि कोई छूट न जाए
-      return allStreams.slice(0, 30);
+      return allStreams.slice(0, 25);
     } catch (e) {
       console.error("[TorraStream]", e);
       return [];
