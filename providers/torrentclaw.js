@@ -32,25 +32,25 @@ var HEADERS = {
   "Accept": "application/json"
 };
 
-// TorrentClaw ke Indian Flag aur Hindi Audio ko pehchanne ka logic
 function isRealHindiAudio(rawTitle) {
   if (!rawTitle) return false;
   const t = rawTitle.toLowerCase();
 
-  // Agar Tamil (TA) ya Telugu (TE) flag code laga ho toh reject karein
+  // Tamil ya Telugu regional dubs ko reject karein
   if (rawTitle.includes("🇮🇳TA") || rawTitle.includes("🇮🇳ta") || 
       rawTitle.includes("🇮🇳TE") || rawTitle.includes("🇮🇳te") ||
       rawTitle.includes("🇮🇳ML") || rawTitle.includes("🇮🇳KN")) {
     return false;
   }
 
-  // Sirf subtitle hone par reject karein
+  // Pure Subtitle ko reject karein
   if ((t.includes("sub") || t.includes("esub")) && !t.includes("audio") && !t.includes("dub") && !t.includes("dual")) {
     if (t.includes("hindi sub") || t.includes("hin sub") || t.includes("hi sub")) return false;
   }
 
+  // TorrentClaw ka Indian flag (bina TA/TE) ya standard Hindi keywords
   return (
-    rawTitle.includes("🇮🇳") ||        // TorrentClaw ka Indian Flag
+    rawTitle.includes("🇮🇳") ||
     t.includes("hindi") ||
     t.includes("dubbed") ||
     t.includes("dual audio") ||
@@ -73,12 +73,6 @@ function extractQuality(str) {
   if (u.includes("720p")) return "720p";
   if (u.includes("480p")) return "480p";
   return "Unknown";
-}
-
-function getQualityWeight(q) {
-  if (q === "1080p") return 30;
-  if (q === "720p") return 20;
-  return 10;
 }
 
 function getTrackers() {
@@ -118,6 +112,7 @@ function invokeTorrentClawP2P(imdbId, season, episode) {
       const trackers = yield getTrackers();
       
       return res.streams.map((stream) => {
+        // Description, title, name sab scan hoga taaki Indian flag aur file size miss na ho
         const fullTitle = `${stream.name || ""} ${stream.title || ""} ${stream.description || ""}`;
         const quality = extractQuality(fullTitle);
         const seeder = fullTitle.match(/(?:👤|👥)\s*(\d+)/)?.[1] || "0";
@@ -174,22 +169,16 @@ function getStreams(tmdbId, mediaType, season, episode) {
       
       const streams = yield invokeTorrentClawP2P(imdbId, s, e);
       
-      // Ranking:
-      // 1. Asli Hindi top par
-      // 2. Hindi me 1080p fir 720p
-      // 3. Seeders wise sorting
+      // Ranking Logic:
+      // Hindi stream sabse upar aayegi chahe koi bhi resolution ya seeders ho
       streams.sort((a, b) => {
         if (a.isHindi !== b.isHindi) {
           return b.isHindi ? 1 : -1;
         }
-        if (a.isHindi && b.isHindi) {
-          const qDiff = getQualityWeight(b.quality) - getQualityWeight(a.quality);
-          if (qDiff !== 0) return qDiff;
-        }
         return (b.seeders || 0) - (a.seeders || 0);
       });
       
-      return streams.slice(0, 25);
+      return streams.slice(0, 30);
     } catch (e) {
       console.error("[TorrentClaw P2P Provider]", e);
       return [];
